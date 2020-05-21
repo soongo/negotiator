@@ -5,4 +5,4 @@
 package negotiator
 
 // Version is the current version of negotiator.
-const Version = "v0.6.3-dev"
+const Version = "v0.6.3"
