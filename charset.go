@@ -127,7 +127,10 @@ func PreferredCharsets(accept string, provided ...string) []string {
 		// sorted list of all charsets
 		filteredAcs := acs.filter(isAcceptCharsetQuality)
 		acceptCharsetBy(func(ac1, ac2 *acceptCharset) bool {
-			return ac1.q > ac2.q || ac1.i < ac2.i
+			if ac1.q != ac2.q {
+				return ac1.q > ac2.q
+			}
+			return ac1.i < ac2.i
 		}).sort(filteredAcs)
 		return filteredAcs.toCharsets()
 	}
@@ -135,9 +138,7 @@ func PreferredCharsets(accept string, provided ...string) []string {
 	// sorted list of accepted charsets
 	priorities := getCharsetSpecificities(provided, acs)
 	filteredPriorities := priorities.filter(isSpecificityQuality)
-	specificityBy(func(s1, s2 *specificity) bool {
-		return s1.q > s2.q || s1.s < s2.s || s1.o < s2.o || s1.i < s2.i
-	}).sort(filteredPriorities)
+	specificityBy(compareSpecs).sort(filteredPriorities)
 
 	results := make([]string, 0, len(filteredPriorities))
 	for _, v := range filteredPriorities {
@@ -218,6 +219,22 @@ func charsetSpecify(charset string, ac acceptCharset, index int) *specificity {
 		return nil
 	}
 	return &specificity{index, ac.i, ac.q, s}
+}
+
+func compareSpecs(s1, s2 *specificity) bool {
+	if s1.q != s2.q {
+		return s1.q > s2.q
+	}
+
+	if s1.s != s2.s {
+		return s1.s > s2.s
+	}
+
+	if s1.o != s2.o {
+		return s1.o < s2.o
+	}
+
+	return s1.i < s2.i
 }
 
 func isAcceptCharsetQuality(ac acceptCharset) bool {

@@ -75,7 +75,10 @@ func PreferredLanguages(accept string, provided ...string) []string {
 		// sorted list of all languages
 		filteredAcs := acs.filter(isAcceptLanguageQuality)
 		acceptLanguageBy(func(ac1, ac2 *acceptLanguage) bool {
-			return ac1.q > ac2.q || ac1.i < ac2.i
+			if ac1.q != ac2.q {
+				return ac1.q > ac2.q
+			}
+			return ac1.i < ac2.i
 		}).sort(filteredAcs)
 		return filteredAcs.toLanguages()
 	}
@@ -83,9 +86,7 @@ func PreferredLanguages(accept string, provided ...string) []string {
 	// sorted list of accepted languages
 	priorities := getLanguageSpecificities(provided, acs)
 	filteredPriorities := priorities.filter(isSpecificityQuality)
-	specificityBy(func(s1, s2 *specificity) bool {
-		return s1.q > s2.q || s1.s < s2.s || s1.o < s2.o || s1.i < s2.i
-	}).sort(filteredPriorities)
+	specificityBy(compareSpecs).sort(filteredPriorities)
 
 	results := make([]string, 0, len(filteredPriorities))
 	for _, v := range filteredPriorities {

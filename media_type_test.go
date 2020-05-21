@@ -38,7 +38,7 @@ var preferredMediaTypeTestObjs = []testObj{
 	{
 		"text/*, image/*",
 		[]string{"text/html", "image/*"},
-		[]string{"text/html", "image/*"},
+		[]string{"image/*", "text/html"},
 	},
 	{
 		"text/*, image/*",
@@ -119,6 +119,11 @@ var preferredMediaTypeTestObjs = []testObj{
 		"*/*, text/*;q=x",
 		[]string{"text/html"},
 		[]string{"text/html"},
+	},
+	{
+		"text/*, application/json",
+		[]string{"application/json", "text/plain"},
+		[]string{"application/json", "text/plain"},
 	},
 }
 
